@@ -50,7 +50,7 @@ sudo apt update && sudo apt upgrade -y
 # STEP 2: Install Required Packages
 # =============================================
 print_step "Installing required packages..."
-sudo apt install -y curl wget git build-essential nginx
+sudo apt install -y curl wget git build-essential nginx rsync
 
 # =============================================
 # STEP 3: Install Node.js (v20 LTS)

@@ -47,17 +47,38 @@ sudo chown -R $USER:$USER $TARGET_DIR
 echo -e "\n${GREEN}[2/3]${NC} Copying project files..."
 echo -e "${YELLOW}This may take a few minutes...${NC}"
 
-rsync -av --progress \
-    --exclude 'node_modules' \
-    --exclude '.git' \
-    --exclude '*.log' \
-    --exclude 'client/dist' \
-    --exclude 'server/uploads/*' \
-    --exclude '.env' \
-    --exclude 'client/.env' \
-    --exclude 'server/.env' \
-    "$SOURCE_DIR/" \
-    "$TARGET_DIR/"
+if command -v rsync &> /dev/null; then
+    # Use rsync if available (better for progress)
+    rsync -av --progress \
+        --exclude 'node_modules' \
+        --exclude '.git' \
+        --exclude '*.log' \
+        --exclude 'client/dist' \
+        --exclude 'server/uploads/*' \
+        --exclude '.env' \
+        --exclude 'client/.env' \
+        --exclude 'server/.env' \
+        "$SOURCE_DIR/" \
+        "$TARGET_DIR/"
+else
+    # Fallback to cp if rsync is not available
+    echo -e "${YELLOW}rsync not found, using cp instead...${NC}"
+    
+    # Copy everything first
+    cp -r "$SOURCE_DIR"/* "$TARGET_DIR/" 2>/dev/null || true
+    cp -r "$SOURCE_DIR"/.[!.]* "$TARGET_DIR/" 2>/dev/null || true
+    
+    # Remove excluded directories
+    echo -e "${YELLOW}Cleaning up excluded directories...${NC}"
+    rm -rf "$TARGET_DIR"/node_modules 2>/dev/null || true
+    rm -rf "$TARGET_DIR"/.git 2>/dev/null || true
+    rm -rf "$TARGET_DIR"/client/dist 2>/dev/null || true
+    rm -rf "$TARGET_DIR"/server/uploads/* 2>/dev/null || true
+    find "$TARGET_DIR" -name "*.log" -type f -delete 2>/dev/null || true
+    rm -f "$TARGET_DIR"/.env 2>/dev/null || true
+    rm -f "$TARGET_DIR"/client/.env 2>/dev/null || true
+    rm -f "$TARGET_DIR"/server/.env 2>/dev/null || true
+fi
 
 # Set permissions
 echo -e "\n${GREEN}[3/3]${NC} Setting permissions..."

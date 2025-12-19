@@ -76,7 +76,8 @@ sudo apt install -y \
     ca-certificates \
     gnupg \
     lsb-release \
-    unzip
+    unzip \
+    rsync
 print_success "Essential packages installed!"
 
 # =============================================
