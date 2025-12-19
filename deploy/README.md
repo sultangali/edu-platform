@@ -167,10 +167,36 @@ sudo systemctl status mongod
 sudo journalctl -u mongod
 ```
 
+## Настройка HTTPS (SSL/TLS)
+
+### Вариант 1: Let's Encrypt (рекомендуется, требует домен)
+
+```bash
+# У вас должен быть домен, указывающий на ваш сервер
+cd /var/www/edu-platform/deploy
+sudo ./setup-ssl.sh yourdomain.com your@email.com
+```
+
+**Требования:**
+- Домен должен указывать на ваш сервер (A запись в DNS)
+- Порт 80 должен быть открыт (для проверки)
+- Порт 443 должен быть открыт (для HTTPS)
+
+### Вариант 2: Self-Signed (для IP адреса, НЕ рекомендуется)
+
+```bash
+# Только для тестирования! Браузеры покажут предупреждение
+cd /var/www/edu-platform/deploy
+sudo ./setup-ssl-with-ip.sh [IP_ADDRESS]
+```
+
+**⚠️ Внимание:** Self-signed сертификаты небезопасны для продакшена. Браузеры будут показывать предупреждения.
+
 ## Безопасность
 
 1. Измените `JWT_SECRET` на длинную случайную строку
 2. Настройте firewall (ufw)
 3. Регулярно обновляйте пакеты: `sudo apt update && sudo apt upgrade`
 4. Рассмотрите использование MongoDB Atlas для продакшена
+5. Используйте HTTPS (Let's Encrypt с доменом)
 
