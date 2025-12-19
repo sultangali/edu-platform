@@ -4,8 +4,8 @@ module.exports = {
       name: 'edu-platform',
       script: './server/index.js',
       cwd: '/var/www/edu-platform',
-      instances: 'max',
-      exec_mode: 'cluster',
+      instances: 1, // Use 1 instance for stability (can increase later)
+      exec_mode: 'fork',
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
