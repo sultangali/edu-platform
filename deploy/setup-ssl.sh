@@ -89,6 +89,25 @@ if [ "$ssl_option" = "1" ]; then
     # Let's Encrypt setup
     echo ""
     read -p "Enter your domain name (e.g., example.com): " DOMAIN
+    
+    # Check if input is an IP address
+    if [[ $DOMAIN =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        print_error "Let's Encrypt does NOT work with IP addresses!"
+        echo ""
+        print_warning "Detected IP address: $DOMAIN"
+        echo -e "${YELLOW}Let's Encrypt only works with domain names (like example.com)${NC}"
+        echo ""
+        read -p "Would you like to use Self-Signed certificate instead? (y/n) " -n 1 -r
+        echo ""
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            setup_selfsigned
+            exit 0
+        else
+            echo "Aborted. Please get a domain name for Let's Encrypt."
+            exit 1
+        fi
+    fi
+    
     read -p "Enter your email for Let's Encrypt notifications: " EMAIL
     
     if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ]; then
@@ -99,11 +118,17 @@ if [ "$ssl_option" = "1" ]; then
     print_warning "Let's Encrypt requires:"
     echo -e "  • Domain ${BLUE}$DOMAIN${NC} must point to ${BLUE}$SERVER_IP${NC}"
     echo -e "  • Ports 80 and 443 must be open"
+    echo -e "  • DNS A record must be configured"
     echo ""
     read -p "Is your domain configured? (y/n) " -n 1 -r
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         print_error "Please configure your domain DNS first!"
+        echo ""
+        echo -e "${YELLOW}You can:${NC}"
+        echo -e "  1. Configure DNS A record for $DOMAIN → $SERVER_IP"
+        echo -e "  2. Wait for DNS propagation (can take up to 24 hours)"
+        echo -e "  3. Or use Self-Signed certificate for now (option 2)"
         exit 1
     fi
     
