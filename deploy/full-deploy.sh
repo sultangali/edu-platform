@@ -285,10 +285,19 @@ print_success "Nginx configured!"
 # STEP 9: Configure Firewall
 # =============================================
 print_step "9/10 - Configuring firewall..."
-sudo ufw allow OpenSSH
-sudo ufw allow 'Nginx Full'
-echo "y" | sudo ufw enable
-print_success "Firewall configured!"
+if command -v ufw &> /dev/null; then
+    sudo ufw allow OpenSSH
+    sudo ufw allow 'Nginx Full'
+    echo "y" | sudo ufw enable
+    print_success "Firewall configured!"
+else
+    print_warning "ufw not found, installing..."
+    sudo apt install -y ufw
+    sudo ufw allow OpenSSH
+    sudo ufw allow 'Nginx Full'
+    echo "y" | sudo ufw enable
+    print_success "Firewall configured!"
+fi
 
 # =============================================
 # STEP 10: Setup PM2 Startup

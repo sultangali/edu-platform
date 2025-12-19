@@ -28,6 +28,16 @@ print_step() {
 cd $APP_DIR
 
 # =============================================
+# STEP 0: Check if project files exist
+# =============================================
+if [ ! -f "$APP_DIR/server/package.json" ]; then
+    echo -e "${RED}Error: Project files not found!${NC}"
+    echo -e "${YELLOW}Please copy your project files to $APP_DIR first.${NC}"
+    echo -e "${YELLOW}You can use the upload-to-server.sh script or git clone.${NC}"
+    exit 1
+fi
+
+# =============================================
 # STEP 1: Install Server Dependencies
 # =============================================
 print_step "Installing server dependencies..."

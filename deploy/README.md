@@ -9,22 +9,39 @@
 ssh username@34.88.163.32
 ```
 
-### Шаг 2: Скопируйте и запустите скрипт установки
+### Шаг 2: Скопируйте проект на сервер
 ```bash
-# Создайте директорию
+# С локальной машины (используйте один из способов):
+
+# Способ 1: Используя скрипт upload-to-server.sh
+cd /path/to/edu-platform/deploy
+./upload-to-server.sh
+
+# Способ 2: Используя git clone (если проект в репозитории)
+ssh username@34.88.163.32
 sudo mkdir -p /var/www/edu-platform
 sudo chown -R $USER:$USER /var/www/edu-platform
+git clone <your-repo-url> /var/www/edu-platform
 
-# Скопируйте проект на сервер (с локальной машины)
+# Способ 3: Используя scp/rsync
 scp -r /path/to/edu-platform/* username@34.88.163.32:/var/www/edu-platform/
+```
 
-# На сервере запустите скрипт установки
+### Шаг 3: Запустите скрипт установки системы
+```bash
+ssh username@34.88.163.32
 cd /var/www/edu-platform/deploy
-chmod +x full-deploy.sh setup-app.sh
+chmod +x full-deploy.sh setup-app.sh check-files.sh
 ./full-deploy.sh
 ```
 
-### Шаг 3: Настройте переменные окружения
+### Шаг 3.1: Проверьте наличие файлов (опционально)
+```bash
+cd /var/www/edu-platform/deploy
+./check-files.sh
+```
+
+### Шаг 4: Настройте переменные окружения
 ```bash
 # Скопируйте примеры
 cp /var/www/edu-platform/deploy/server.env.example /var/www/edu-platform/server/.env
@@ -40,7 +57,7 @@ nano /var/www/edu-platform/server/.env
 - `GOOGLE_CLIENT_ID` и `GOOGLE_CLIENT_SECRET` - для Google OAuth
 - `GEMINI_API_KEY` - для AI функций
 
-### Шаг 4: Запустите приложение
+### Шаг 5: Запустите приложение
 ```bash
 cd /var/www/edu-platform/deploy
 ./setup-app.sh
